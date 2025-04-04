@@ -4,7 +4,7 @@ import db from "@/Database/db";
 // Correctly export GET method
 export async function GET(req: Request, { params }: { params: { id: string } }) {
   try {
-    const { id } = params; // Get the id from params
+    const { id } = await params; // Get the id from params
     const user = await db.query(`SELECT * FROM users WHERE id = ${id} LIMIT 1;`);
     
     if (!user.length) {
