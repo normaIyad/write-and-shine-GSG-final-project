@@ -87,7 +87,7 @@ const textaria = {
   },
 
   "&:disabled": {
-    backgroundColor: "#f5f5f5",
+    backgroundColor: "#1976d2",
     color: "#999",
   },
 
@@ -138,7 +138,7 @@ const textFieldStyles = {
 };
 const mainbox = {
   bgcolor: "primary.main",
-  margin: "20px auto",
+  margin: "2px auto",
   maxWidth: 800,
   borderRadius: 20,
   padding: "20px",
