@@ -37,6 +37,11 @@ const NavBar =() =>{
             </Link>
           </Button>
           <Button color="inherit">
+            <Link href="/Signin" style={{ textDecoration: "none", color: "white" }}>
+              Home sing in 
+            </Link>
+          </Button>
+          <Button color="inherit">
             <Link
               href="/about"
               style={{ textDecoration: "none", color: "white" }}
@@ -46,7 +51,7 @@ const NavBar =() =>{
           </Button>
           <Button color="inherit">
             <Link
-              href="/contact"
+              href="/PersonalDetails"
               style={{ textDecoration: "none", color: "white" }}
             >
               Contact Us
