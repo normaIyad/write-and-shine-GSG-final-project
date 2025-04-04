@@ -5,6 +5,7 @@ import Link from "next/link";
 import ReadMore from "./ReadMore";
 import img from "@/public/Account_user/account_circle.svg";
 import { Post } from "@/types/types";
+import LikeComment from "../Like&Comment/LikeComment";
 const Plog = ({  content,title , author_id , created_at }: Post) => {
   const [username , setUsername] = useState();
   useEffect(() => {
@@ -61,6 +62,9 @@ const Plog = ({  content,title , author_id , created_at }: Post) => {
       {title}
     </Typography>
     <ReadMore fullContent={content} />
+    <Box>
+      <LikeComment/>
+    </Box>
   </Box>
   );
 };

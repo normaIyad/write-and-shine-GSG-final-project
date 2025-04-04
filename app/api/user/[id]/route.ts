@@ -5,7 +5,7 @@ import db from "@/Database/db";
 export async function GET(req: Request, { params }: { params: { id: string } }) {
   try {
     const { id } = params; // Get the id from params
-    const user = await db.query(`SELECT * FROM users WHERE id = ${id} LIMIT 1;`);
+    const user = await db.query(`SELECT * FROM users WHERE id = ? LIMIT 1;` , [id]);
     
     if (!user.length) {
       return NextResponse.json({ message: "User not found" }, { status: 404 });
@@ -17,3 +17,4 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
     return NextResponse.json({ message: "Server Error" }, { status: 500 });
   }
 }
+
