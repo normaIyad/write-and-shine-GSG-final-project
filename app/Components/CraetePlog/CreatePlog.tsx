@@ -5,7 +5,14 @@ import Box from "@mui/material/Box";
 import Image from "next/image";
 import Button from "@mui/material/Button";
 import img from "@/public/Account_user/account_circle.svg";
-import { InputLabel, MenuItem, Select, SelectChangeEvent, ThemeProvider, Typography } from "@mui/material";
+import {
+  InputLabel,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+  ThemeProvider,
+  Typography,
+} from "@mui/material";
 import { Icatigory, Itags, Post } from "@/types/types";
 import {
   position,
@@ -22,7 +29,7 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import TextField from "@mui/material/TextField";
 import Alert from "@mui/material/Alert";
 import AlertTitle from "@mui/material/AlertTitle";
-const CreateBlog = ({ onPostAdded }: { onPostAdded: () => void}) => {
+const CreateBlog = ({ onPostAdded }: { onPostAdded: () => void }) => {
   const [isTyping, setIsTyping] = useState(false);
   const [text, setText] = useState("");
   const [title, setTitle] = useState("");
@@ -38,11 +45,17 @@ const CreateBlog = ({ onPostAdded }: { onPostAdded: () => void}) => {
 
   const handleSubmit = () => {
     if (title.length < 5) {
-      setAlert({ type: "warning", message: "Blog title should be at least 5 characters long!" });
+      setAlert({
+        type: "warning",
+        message: "Blog title should be at least 5 characters long!",
+      });
       return;
     }
     if (text.length < 10) {
-      setAlert({ type: "warning", message: "Blog content should be at least 10 characters long!" });
+      setAlert({
+        type: "warning",
+        message: "Blog content should be at least 10 characters long!",
+      });
       return;
     }
     if (text.length === 0) {
@@ -50,7 +63,10 @@ const CreateBlog = ({ onPostAdded }: { onPostAdded: () => void}) => {
       return;
     }
     if (selectedTags.length === 0) {
-      setAlert({ type: "error", message: "Please select at least one blog category!" });
+      setAlert({
+        type: "error",
+        message: "Please select at least one blog category!",
+      });
       return;
     }
     if (title.length === 0) {
@@ -62,15 +78,15 @@ const CreateBlog = ({ onPostAdded }: { onPostAdded: () => void}) => {
       title: title,
       content: text,
       author_id: 1,
-      category_id: chosen_cat?.id || 1, 
+      category_id: chosen_cat?.id || 1,
       is_active: true,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
-      id: 0
+      id: 0,
     };
     addPost(newPost);
     setAlert({ type: "success", message: "Blog posted successfully!" });
-    onPostAdded(); 
+    onPostAdded();
     setText("");
     setTitle("");
     setSelectedTags([]);
@@ -88,8 +104,7 @@ const CreateBlog = ({ onPostAdded }: { onPostAdded: () => void}) => {
       .then((res) => res.json())
       .then((data) => setTags(data))
       .catch((error) => console.error("Error fetching data:", error));
-
-  }
+  };
 
   const handleChange = (event: SelectChangeEvent<string>) => {
     const selectedCatId = parseInt(event.target.value, 10);
@@ -114,9 +129,6 @@ const CreateBlog = ({ onPostAdded }: { onPostAdded: () => void}) => {
         content: postdata.content,
         author_id: postdata.author_id,
         category_id: postdata.category_id,
-        is_active: postdata.is_active,
-        created_at: postdata.created_at,
-        updated_at: postdata.updated_at,
         tags: selectedTags,
       }),
     });
@@ -164,8 +176,22 @@ const CreateBlog = ({ onPostAdded }: { onPostAdded: () => void}) => {
             width: "90%",
             boxShadow: "0 6px 15px rgba(0, 100, 255, 0.3)",
             borderRadius: "12px",
-            backgroundColor: alerts.type === "success" ? "#e0f7e9" : alerts.type === "error" ? "#fbe4e4" : alerts.type === "warning" ? "#fff7e5" : "#e3f2fd", // Dynamic background colors
-            color: alerts.type === "success" ? "#2e7d32" : alerts.type === "error" ? "#c62828" : alerts.type === "warning" ? "#ed6c02" : "#0277bd", // Matching text colors
+            backgroundColor:
+              alerts.type === "success"
+                ? "#e0f7e9"
+                : alerts.type === "error"
+                ? "#fbe4e4"
+                : alerts.type === "warning"
+                ? "#fff7e5"
+                : "#e3f2fd", // Dynamic background colors
+            color:
+              alerts.type === "success"
+                ? "#2e7d32"
+                : alerts.type === "error"
+                ? "#c62828"
+                : alerts.type === "warning"
+                ? "#ed6c02"
+                : "#0277bd", // Matching text colors
             cursor: "pointer",
             zIndex: 100,
             textAlign: "center",
@@ -180,15 +206,17 @@ const CreateBlog = ({ onPostAdded }: { onPostAdded: () => void}) => {
         </Alert>
       )}
       <Box sx={flex}>
-        <Box sx={{
-          width: isTyping ? 1 : 80, height: 40,
-          display: "flex",
-          padding: isTyping ? "10px" : "",
-          margin: isTyping ? "10px" : "",
-          justifyContent: isTyping ? "flex-start" : "center",
-          alignItems: "center",
-          borderRadius: 10,
-        }}
+        <Box
+          sx={{
+            width: isTyping ? 1 : 80,
+            height: 40,
+            display: "flex",
+            padding: isTyping ? "10px" : "",
+            margin: isTyping ? "10px" : "",
+            justifyContent: isTyping ? "flex-start" : "center",
+            alignItems: "center",
+            borderRadius: 10,
+          }}
         >
           <Image src={img.src} width={40} height={40} alt="User Avatar" />
           {isTyping ? <Box>User name </Box> : null}

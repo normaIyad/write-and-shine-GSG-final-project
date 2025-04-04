@@ -14,11 +14,14 @@
     "@mui/icons-material": "^6.4.8",
     "@mui/joy": "^5.0.0-beta.52",
     "@mui/material": "^6.4.9",
+    "cloudinary": "^2.6.0",
     "mssql": "^11.0.1",
+    "multer": "^1.4.5-lts.2",
     "mysql2": "^3.14.0",
     "next": "15.2.3",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "zod": "^3.24.2"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
