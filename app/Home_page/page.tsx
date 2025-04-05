@@ -14,6 +14,8 @@ const HomePage = () => {
       .then((data) => {
         setPosts(data.data);
         setNewpost(false); 
+        console.log(data.data);
+        
       })
       .catch((err) => console.error("Error fetching posts:", err));
   }, [newpost]); 
