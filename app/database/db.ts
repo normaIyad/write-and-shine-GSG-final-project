@@ -19,7 +19,7 @@ async function testConnection() {
   try {
     const connection = await db.getConnection();
     console.log("✅ Database connection successful!");
-    connection.release(); // Release the connection back to the pool
+    connection.release(); 
   } catch (error) {
     console.error("❌ Database connection failed:", error);
   }
