@@ -148,10 +148,6 @@ const CreateBlog = ({ onPostAdded }: { onPostAdded: () => void }) => {
     );
     console.log(tag);
   };
-  // const addTag =async ()=>{
-
-  // }
-
   return (
     <Box
       sx={{

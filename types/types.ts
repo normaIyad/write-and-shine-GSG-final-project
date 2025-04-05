@@ -25,6 +25,12 @@ export interface Itags {
   created_at: string,
   updated_at: string
 }
+export interface Icommentts {
+  id: number,
+  post_id: number,
+  author_id: number,
+  content: string,
+}
 export interface Icatigory{
   id: number , 
   name: string,
