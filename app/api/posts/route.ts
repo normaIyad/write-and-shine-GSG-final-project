@@ -1,21 +1,47 @@
 import { NextResponse } from "next/server";
 import db from "../../../Database/db";
 import { ResultSetHeader } from "mysql2";
+
+
+
+
 export async function GET() {
   try {
-    const [rows] = await db.query(`SELECT * FROM posts`);
-    if (!rows) {
-      return NextResponse.json({ message: "No data found" }, { status: 404 });
+    // Fetch the latest 5 posts with like and comment counts
+    const [posts]:any[] = await db.query(`
+      SELECT 
+        p.*, 
+        (SELECT COUNT(*) FROM likes WHERE post_id = p.id) AS like_count,
+        (SELECT COUNT(*) FROM comments WHERE post_id = p.id) AS comment_count
+      FROM posts p
+      ORDER BY p.created_at DESC
+      LIMIT 5
+    `);
+
+    // Fetch up to 5 comments for each post
+    for (const post of posts) {
+      const [comments] = await db.query(
+        `
+        SELECT * FROM comments 
+        WHERE post_id = ? 
+        ORDER BY created_at DESC 
+        LIMIT 5
+      `,
+        [post.id]
+      );
+      post.comments = comments;
     }
-    return NextResponse.json({ data: rows, status: 200 });
+
+    return NextResponse.json({ data: posts }, { status: 200 });
   } catch (err) {
-    console.error(err);
+    console.error("Error fetching posts:", err);
     return NextResponse.json(
       { message: "Error fetching data" },
       { status: 500 }
     );
   }
 }
+
 
 export async function POST(res: NextResponse) {
   try {

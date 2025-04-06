@@ -1,3 +1,4 @@
+import Footer from "./Footer/Footer";
 import HomePage from "./Home_page/page";
 
 export default function Home() {
@@ -7,7 +8,7 @@ export default function Home() {
         <HomePage />
       </main>
       <footer className="row-start-3 flex gap-4 sm:gap-6 flex-wrap items-center justify-center bg-gray-200 py-4">
-        {/* Footer Content */}
+      
       </footer>
     </div>
   );

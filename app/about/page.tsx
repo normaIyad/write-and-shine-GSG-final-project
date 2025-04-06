@@ -11,7 +11,7 @@ const About: React.FC = () => {
         stay informed and inspired.
       </p>
       <Image
-        src="/images/about-us.jpg"
+        src="/abous-us.png"
         alt="About Us"
         width={600}
         height={400}

@@ -9,8 +9,8 @@ import {
   Divider,
   Button,
 } from "@mui/material";
-import BlogCard from "@/app/components/BlogCard/BlogCard";
-import EditProfileForm from "@/app/components/EditProfileForm/EditProfileForm";
+import BlogCard from "../Components/BlogCard/BlogCard";
+import EditProfileForm from "../Components/EditProfileForm/EditProfileForm";
 const blogs = [
   {
     id: 1,
@@ -144,6 +144,8 @@ const PersonalDetailsPage = () => {
                 content={blog.content}
                 likes={blog.likes}
                 comments={blog.comments}
+                onDelete={() => {
+                  console.log("Delete blog with ID:", blog.id);}}
               />
             ))}
           </Box>

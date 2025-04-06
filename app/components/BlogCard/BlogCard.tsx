@@ -29,7 +29,7 @@ interface BlogCardProps {
   onDelete: () => void; // Function to handle blog deletion
 }
 
-const BlogCard= (CProps:BlogCardProps) => {
+const BlogCard = (CProps: BlogCardProps) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
@@ -47,7 +47,14 @@ const BlogCard= (CProps:BlogCardProps) => {
   };
 
   return (
-    <Card sx={{ marginBottom: 3, boxShadow: 2, borderRadius: 2, position: "relative" }}>
+    <Card
+      sx={{
+        marginBottom: 3,
+        boxShadow: 2,
+        borderRadius: 2,
+        position: "relative",
+      }}
+    >
       {/* Options Menu Icon */}
       <IconButton
         onClick={handleMenuOpen}
@@ -65,7 +72,11 @@ const BlogCard= (CProps:BlogCardProps) => {
         <Typography variant="h5" fontWeight="bold" gutterBottom color="#1976d2">
           {CProps.title}
         </Typography>
-        <Typography variant="body1" color="textSecondary" sx={{ marginBottom: 2 }}>
+        <Typography
+          variant="body1"
+          color="textSecondary"
+          sx={{ marginBottom: 2 }}
+        >
           {CProps.content}
         </Typography>
       </CardContent>
@@ -88,7 +99,12 @@ const BlogCard= (CProps:BlogCardProps) => {
         </Typography>
         {CProps.comments.length > 0 ? (
           CProps.comments.map((comment) => (
-            <Box key={comment.id} display="flex" alignItems="flex-start" marginBottom={2}>
+            <Box
+              key={comment.id}
+              display="flex"
+              alignItems="flex-start"
+              marginBottom={2}
+            >
               <Avatar sx={{ marginRight: 2 }}>{comment.user.charAt(0)}</Avatar>
               <Box>
                 <Typography variant="subtitle2" fontWeight="bold">

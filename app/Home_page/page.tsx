@@ -7,13 +7,16 @@ import Loader from "@/app/Components/Loader/Loader"
 const HomePage = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [newpost, setNewpost] = useState<boolean>(false);
-
+ const [loading, setLoading] = useState<boolean>(true); // Loading state
   useEffect(() => {
+    setLoading(false); // Set loading to true before fetching
     fetch('/api/posts')
       .then((res) => res.json())
       .then((data) => {
         setPosts(data.data);
         setNewpost(false); 
+        setLoading(true); // Set loading to false after fetching
+        
       })
       .catch((err) => console.error("Error fetching posts:", err));
   }, [newpost]); 
@@ -24,10 +27,16 @@ const HomePage = () => {
 
   return (
     <div>
+<<<<<<< HEAD
      {posts.length > 0 ? (
       <>
       <CreateBlog onPostAdded={handleNewPost} />
       {  posts.map((plog: Post) => (
+=======
+      {loading && <CreateBlog onPostAdded={handleNewPost} />}
+      {posts.length > 0 ? (
+        posts.map((plog: Post) => (
+>>>>>>> b8bf33a160256a3cc897b1ec28d708436bcd9dae
           <Plog key={plog.id} {...plog} />
         )) }
       </>
