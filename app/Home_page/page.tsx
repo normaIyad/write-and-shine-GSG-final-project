@@ -27,16 +27,10 @@ const HomePage = () => {
 
   return (
     <div>
-<<<<<<< HEAD
      {posts.length > 0 ? (
       <>
       <CreateBlog onPostAdded={handleNewPost} />
       {  posts.map((plog: Post) => (
-=======
-      {loading && <CreateBlog onPostAdded={handleNewPost} />}
-      {posts.length > 0 ? (
-        posts.map((plog: Post) => (
->>>>>>> b8bf33a160256a3cc897b1ec28d708436bcd9dae
           <Plog key={plog.id} {...plog} />
         )) }
       </>
