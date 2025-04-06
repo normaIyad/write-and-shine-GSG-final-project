@@ -11,11 +11,8 @@ const SignUp: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
     localStorage.setItem("userData", JSON.stringify({ name, email, password }));
-
     alert("you are login sucssfully !");
-
     setName("");
     setEmail("");
     setPassword("");

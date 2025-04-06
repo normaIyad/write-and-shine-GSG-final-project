@@ -10,7 +10,9 @@ interface Props {
 }
 const LikeComment = ({id } : Props) => {
   const postId = id;
-  const userId = 4;
+  const storedUser = localStorage.getItem("user");
+  const userdata = storedUser ? JSON.parse(storedUser) : null;
+  const userId = userdata?.id;
   const [likesCount, setLikesCount] = React.useState(0);
   const [showComment, setShowComment] = useState(false);
   const addLike = async () => {
@@ -54,6 +56,10 @@ const LikeComment = ({id } : Props) => {
 
   const [isLiked, setIsLiked] = React.useState(false);
   const likeClick = async () => {
+    if (!userId) {
+      alert("Please Login to view likes");
+      return;
+    }
     try {
       if (isLiked) {
         await removeLike();

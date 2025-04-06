@@ -51,7 +51,6 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
       const commentId = parseInt(params.id);
       const body = await req.json();
       const parsed = editSchema.safeParse(body);
-  
       if (!parsed.success) {
         return NextResponse.json({ error: parsed.error.format() }, { status: 400 });
       }

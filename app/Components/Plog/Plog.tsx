@@ -6,7 +6,7 @@ import ReadMore from "./ReadMore";
 import img from "@/public/Account_user/account_circle.svg";
 import { Post } from "@/types/types";
 import LikeComment from "../Like&Comment/LikeComment";
-const Plog = ({ id , content,title , author_id , created_at }: Post) => {
+const Plog = ({ id , content,title , author_id  }: Post) => {
   const [username , setUsername] = useState();
   useEffect(() => {
     if (author_id) {
@@ -52,9 +52,6 @@ const Plog = ({ id , content,title , author_id , created_at }: Post) => {
               {username || "Loading..."}
             </Link>
           
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          Date: {created_at}
         </Typography>
       </Box>
     </Box>

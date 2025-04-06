@@ -15,8 +15,6 @@ export interface Post {
     author_id: number;
     category_id: number;
     is_active: boolean;
-    created_at: string;
-    updated_at: string;
   }
 export interface Itags {
   id: number,
@@ -35,7 +33,6 @@ export interface Icatigory{
   id: number , 
   name: string,
   is_active: boolean,
-  created_at: string,
-  updated_at: string
 }
+
 export default IPlog;

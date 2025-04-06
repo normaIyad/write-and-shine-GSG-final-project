@@ -25,7 +25,6 @@ export async function POST(res: NextResponse) {
       content,
       author_id,
       category_id,
-
       tags,
     } = body;
     if (

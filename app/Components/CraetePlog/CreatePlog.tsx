@@ -44,6 +44,9 @@ const CreateBlog = ({ onPostAdded }: { onPostAdded: () => void }) => {
   } | null>(null);
 
   const handleSubmit = () => {
+    const storedUser = localStorage.getItem("user");
+    const userdata = storedUser ? JSON.parse(storedUser) : null;
+    const userId = userdata?.id;
     if (title.length < 5) {
       setAlert({
         type: "warning",
@@ -73,17 +76,20 @@ const CreateBlog = ({ onPostAdded }: { onPostAdded: () => void }) => {
       setAlert({ type: "error", message: "Blog title should not be empty!" });
       return;
     }
-
     const newPost: Post = {
       title: title,
       content: text,
-      author_id: 1,
+      author_id: userId ,
       category_id: chosen_cat?.id || 1,
       is_active: true,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
       id: 0,
     };
+    if(!newPost.author_id){
+      setAlert({
+        type: "error",
+        message: "User not found, please login again!"
+      })
+    }
     addPost(newPost);
     setAlert({ type: "success", message: "Blog posted successfully!" });
     onPostAdded();

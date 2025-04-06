@@ -24,11 +24,13 @@ const HomePage = () => {
 
   return (
     <div>
+     {posts.length > 0 ? (
+      <>
       <CreateBlog onPostAdded={handleNewPost} />
-      {posts.length > 0 ? (
-        posts.map((plog: Post) => (
+      {  posts.map((plog: Post) => (
           <Plog key={plog.id} {...plog} />
-        ))
+        )) }
+      </>
       ) : (
         <Loader/>
         )}
