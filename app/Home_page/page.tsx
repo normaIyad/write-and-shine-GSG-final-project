@@ -4,6 +4,7 @@ import Plog from '@/app/Components/Plog/Plog';
 import { Post } from "@/types/types";
 import CreateBlog from '@/app/Components/CraetePlog/CreatePlog';
 import Loader from "@/app/Components/Loader/Loader"
+
 const HomePage = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [newpost, setNewpost] = useState<boolean>(false);
@@ -24,14 +25,16 @@ const HomePage = () => {
 
   return (
     <div>
-      <CreateBlog onPostAdded={handleNewPost} />
       {posts.length > 0 ? (
-        posts.map((plog: Post) => (
-          <Plog key={plog.id} {...plog} />
-        ))
+        <>
+          <CreateBlog onPostAdded={handleNewPost} />
+          {posts.map((plog: Post) => (
+            <Plog key={plog.id} {...plog} />
+          ))}
+        </>
       ) : (
-        <Loader/>
-        )}
+        <Loader />
+      )}
     </div>
   );
 };
