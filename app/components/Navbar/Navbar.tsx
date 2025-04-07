@@ -41,7 +41,7 @@ const NavBar = () => {
               href="/Signin"
               style={{ textDecoration: "none", color: "white" }}
             >
-              Home sing in
+             sing in
             </Link>
           </Button>
           <Button color="inherit">

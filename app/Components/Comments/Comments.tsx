@@ -3,6 +3,8 @@ import { Box, Typography, TextField, Button, Card, CardContent, AlertTitle, Aler
 
 interface IComment {
   id: number;
+  user_id: number;
+  author_name: string;
   content: string;
 }
 
@@ -11,19 +13,43 @@ interface Props {
 }
 
 const Comments = ({ postId }: Props) => {
+  const storedUser = localStorage.getItem("user");
+  const userdata = storedUser ? JSON.parse(storedUser) : null;
+  const userId = userdata?.id;
   const [data, setData] = useState<IComment[]>([]);
   const [newComment, setNewComment] = useState('');
+  const [loading, setLoading] = useState(true);
  const [alerts, setAlert] = useState<{
     type: "success" | "info" | "warning" | "error";
     message: string;
   } | null>(null);
-  const userId = 2;
   const getCommts = ()=>{
     fetch(`/api/comments/${postId}`)
      .then((response) => response.json())
-     .then((data) => setData(data.data));
+     .then((data) => {
+      setData(data.data);
+      fetchUsernames(data.data); 
+      setLoading(false);
+    });
   }
-  // const userId = parseInt(localStorage.getItem('userId')!);
+  const fetchUsernames = async (comments: IComment[]) => {
+    const updatedComments = await Promise.all(
+      comments.map(async (comment) => {
+        if (!comment.author_name) {
+          try {
+            const res = await fetch(`api/user/${comment.user_id}`);
+            const userData = await res.json();
+            comment.author_name = userData[0]?.username || "Unknown";
+          } catch (err) {
+            console.error("Error fetching username", err);
+            comment.author_name = "Unknown";
+          }
+        }
+        return comment;
+      })
+    );
+    setData(updatedComments);
+  };
   useEffect(() => {
     getCommts();
   }, [postId]);
@@ -113,7 +139,13 @@ const Comments = ({ postId }: Props) => {
         Comments
       </Typography>
 
-      {data.length === 0 ? (
+      {
+      loading ? (
+        <Typography variant="body1" sx={{ textAlign: 'center', color: 'textSecondary' }}>
+          Loading comments...
+        </Typography>
+      ) :
+      data.length === 0 ? (
         <Typography
           variant="body1"
           sx={{
@@ -135,6 +167,9 @@ const Comments = ({ postId }: Props) => {
             }}
           >
             <CardContent>
+            <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                {comment.author_name || 'Loading...'}
+              </Typography>
               <Typography variant="body2" sx={{ color: '#333' }}>
                 {comment.content}
               </Typography>
@@ -142,8 +177,7 @@ const Comments = ({ postId }: Props) => {
           </Card>
         ))
       )}
-
-      <Box
+{storedUser && <Box
         sx={{
           display: 'flex',
           alignItems: 'center',
@@ -164,6 +198,7 @@ const Comments = ({ postId }: Props) => {
         <Button
           variant="contained"
           onClick={handleCommentSubmit}
+          disabled={loading || !newComment.trim()}
           sx={{
             backgroundColor: '#1976d2',
             color: '#fff',
@@ -174,7 +209,7 @@ const Comments = ({ postId }: Props) => {
         >
           Submit
         </Button>
-      </Box>
+      </Box>}
     </Box>
   );
 };
