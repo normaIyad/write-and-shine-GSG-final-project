@@ -5,17 +5,22 @@ import { ResultSetHeader } from "mysql2";
 
 
 
+
 export async function GET() {
   try {
-    // Fetch the latest 5 posts with like and comment counts
-    const [posts]:any[] = await db.query(`
+    // Fetch all posts with author info, like count, and comment count
+    const [posts]: any[] = await db.query(`
       SELECT 
-        p.*, 
+        p.*,
+        u.id AS author_id,
+        u.username AS author_name,
+        u.image AS author_image,
+        u.role AS author_role,
         (SELECT COUNT(*) FROM likes WHERE post_id = p.id) AS like_count,
         (SELECT COUNT(*) FROM comments WHERE post_id = p.id) AS comment_count
       FROM posts p
+      JOIN users u ON p.author_id = u.id
       ORDER BY p.created_at DESC
-    
     `);
 
     // Fetch up to 5 comments for each post

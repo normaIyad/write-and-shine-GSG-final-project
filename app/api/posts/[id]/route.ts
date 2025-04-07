@@ -98,3 +98,44 @@ export async function PATCH(
     );
   }
 }
+
+export async function DELETE(
+  req: Request,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const postId = params.id;
+
+    if (!postId) {
+      return NextResponse.json(
+        { message: "Post ID is required" },
+        { status: 400 }
+      );
+    }
+
+    // Delete related likes and comments first (optional but recommended)
+    await db.query(`DELETE FROM likes WHERE post_id = ?`, [postId]);
+    await db.query(`DELETE FROM comments WHERE post_id = ?`, [postId]);
+
+    // Then delete the post itself
+    const [result]: any = await db.query(`DELETE FROM posts WHERE id = ?`, [postId]);
+
+    if (result.affectedRows === 0) {
+      return NextResponse.json(
+        { message: "Post not found" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(
+      { message: "Post deleted successfully" },
+      { status: 200 }
+    );
+  } catch (err) {
+    console.error("Error deleting post:", err);
+    return NextResponse.json(
+      { message: "Error deleting post" },
+      { status: 500 }
+    );
+  }
+}
