@@ -1,22 +1,91 @@
 "use client";
-
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import Link from "next/link";
 import styles from "./Signup.module.css";
+import {
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+} from "@mui/material";
 
 const SignUp: React.FC = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+<<<<<<< HEAD
+<<<<<<< HEAD
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     localStorage.setItem("userData", JSON.stringify({ name, email, password }));
     alert("you are login sucssfully !");
+=======
+=======
+>>>>>>> origin/Norma-Homepage
+  const [role, setRole] = useState("");
+  const router = useRouter();
+  const ApiaddUser = ()=>{
+    const data = {
+      username: name,
+      email: email,
+      password: password,
+      role: role,
+    };
+    const options = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    };
+    fetch("/api/auth/signup", options)
+  .then(async (res) => {
+    const data = await res.json();
+    if (!res.ok) {
+      console.error("Server responded with:", data);
+      alert(data.error || "Signup failed");
+      return;
+    }
+    alert("You are registered successfully!");
+<<<<<<< HEAD
+>>>>>>> origin/Norma-Homepage
+=======
+>>>>>>> origin/Norma-Homepage
     setName("");
     setEmail("");
     setPassword("");
+    setRole("");
+    router.push("/Signin");
+  })
+  .catch((error) => {
+    console.error("Fetch error:", error);
+    alert("Network error. Please try again.");
+  });
+
+  }
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name || !email || !password || !role) {
+      alert("Please fill in all fields.");
+      return;
+    }
+    if (
+      password.length < 8 ||
+      !/[A-Z]/.test(password) ||
+      !/[!@#$%^&*]/.test(password)
+    ) {
+      alert(
+        "Password must be at least 8 characters long, include an uppercase letter and a special character."
+      );
+      return;
+    }
+    ApiaddUser();
   };
+  const handleChange = (event: SelectChangeEvent<string>) => {
+    setRole(event.target.value);
+  };
+  console.log(role);
 
   return (
     <div className={styles.container}>
@@ -46,6 +115,20 @@ const SignUp: React.FC = () => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
+        <Select
+          id="role"
+          value={role}
+          label="chose role "
+          onChange={handleChange}
+          displayEmpty
+        >
+          <MenuItem value="">
+            <em>Choose role</em>
+          </MenuItem>
+          <MenuItem value="user">User</MenuItem>
+          <MenuItem value="admin">Admin</MenuItem>
+        </Select>
+
         <p className={styles.hint}>
           Enter a secure password with at least 8 characters, including one
           uppercase letter and one special character (e.g., !@#$).
@@ -54,7 +137,7 @@ const SignUp: React.FC = () => {
           Sign Up
         </button>
         <p className={styles.footerText}>
-          Already have an account? <Link href="/Signup">Sign in now</Link>
+          Already have an account? <Link href="/Signin">Sign in now</Link>
         </p>
       </form>
     </div>

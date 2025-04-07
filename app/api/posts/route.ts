@@ -15,7 +15,7 @@ export async function GET() {
         (SELECT COUNT(*) FROM comments WHERE post_id = p.id) AS comment_count
       FROM posts p
       ORDER BY p.created_at DESC
-      LIMIT 5
+    
     `);
 
     // Fetch up to 5 comments for each post

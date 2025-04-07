@@ -265,7 +265,7 @@ const CreateBlog = ({ onPostAdded }: { onPostAdded: () => void }) => {
       {isTyping ? (
         <Box sx={flexColom}>
           <Box sx={{ m: 1, width: 300 }}>
-            <InputLabel id="demo-simple-select-label">Age</InputLabel>
+            <InputLabel id="demo-simple-select-label">Category</InputLabel>
             <Select
               labelId="demo-simple-select-label"
               id="demo-simple-select"

@@ -11,6 +11,7 @@ const signupSchema = z.object({
   username: z.string().min(3, "Username must be at least 3 characters long"),
   email: z.string().email("Invalid email address"),
   password: z.string().min(6, "Password must be at least 6 characters long"),
+  role: z.string()
 });
 
 export async function POST(req: NextRequest) {
@@ -25,7 +26,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { username, email, password } = parsedData.data;
+    const { username, email, password , role } = parsedData.data;
 
     // Check if user already exists
     const [existingUser] = await db.query(
@@ -44,8 +45,8 @@ export async function POST(req: NextRequest) {
 
     // Insert new user into database
     const [result] = await db.query(
-      "INSERT INTO users (username, email, password_hash, is_active, created_at, updated_at) VALUES (?, ?, ?, 1, NOW(), NOW())",
-      [username, email, hashedPassword]
+      "INSERT INTO users (username, email, password_hash,role, is_active,created_at, updated_at) VALUES (?, ?, ?, ? ,1, NOW(), NOW())",
+      [username, email, hashedPassword , role]
     );
 
     const userId = (result as any).insertId;

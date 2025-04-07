@@ -9,12 +9,13 @@ interface IPlog{
 
 
 export interface Post {
-    id: number;
-    title: string;
-    content: string;
-    author_id: number;
-    category_id: number;
-    is_active: boolean;
+    id: number,
+    title: string,
+    content: string,
+    author_id: number,
+    category_id: number,
+    is_active: boolean,
+    like_count: number
   }
 export interface Itags {
   id: number,

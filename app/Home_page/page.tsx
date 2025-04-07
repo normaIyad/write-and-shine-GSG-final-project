@@ -4,19 +4,20 @@ import Plog from '@/app/Components/Plog/Plog';
 import { Post } from "@/types/types";
 import CreateBlog from '@/app/Components/CraetePlog/CreatePlog';
 import Loader from "@/app/Components/Loader/Loader"
+
 const HomePage = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [newpost, setNewpost] = useState<boolean>(false);
- const [loading, setLoading] = useState<boolean>(true); // Loading state
+  const [loading, setLoading] = useState<boolean>(true); // Loading state
+
   useEffect(() => {
-    setLoading(false); // Set loading to true before fetching
+    setLoading(true); 
     fetch('/api/posts')
       .then((res) => res.json())
       .then((data) => {
         setPosts(data.data);
         setNewpost(false); 
-        setLoading(true); // Set loading to false after fetching
-        
+        setLoading(false); 
       })
       .catch((err) => console.error("Error fetching posts:", err));
   }, [newpost]); 
@@ -27,17 +28,20 @@ const HomePage = () => {
 
   return (
     <div>
-     {posts.length > 0 ? (
+    {loading ? (
+      <Loader />
+    ) : posts.length > 0 ? (
       <>
-      <CreateBlog onPostAdded={handleNewPost} />
-      {  posts.map((plog: Post) => (
+        <CreateBlog onPostAdded={handleNewPost} />
+        {posts.map((plog: Post) => (
           <Plog key={plog.id} {...plog} />
-        )) }
+        ))}
       </>
-      ) : (
-        <Loader/>
-        )}
-    </div>
+    ) : (
+      <p>No posts available. Add a new one!</p>
+    )}
+  </div>
+
   );
 };
 

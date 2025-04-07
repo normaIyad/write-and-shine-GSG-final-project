@@ -1,33 +1,45 @@
-
 "use client";
 
 import styles from "../Signup/Signup.module.css";
 import Link from "next/link";
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 
 const SignIn: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const router = useRouter();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const storedUserData = localStorage.getItem("userData");
-    if (storedUserData) {
-      const { email: storedEmail, password: storedPassword } =
-        JSON.parse(storedUserData);
+    const data = { email, password };
 
-      if (email === storedEmail && password === storedPassword) {
-        alert("Login successful!");
-      } else {
-        alert(" Invalid email or password!");
+    try {
+      const res = await fetch("/api/auth/signin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      const responseData = await res.json();
+
+      if (!res.ok) {
+        console.error("Server responded with:", responseData);
+        alert(responseData.error || "Login failed");
+        return;
       }
-    } else {
-      alert(" No user found. Please sign up first.");
-    }
 
-    setEmail("");
-    setPassword("");
+      alert("Login successful!");
+      localStorage.setItem("token", responseData.token);
+      setEmail("");
+      setPassword("");
+      router.push("/"); 
+
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Something went wrong. Please try again.");
+    }
   };
 
   return (
