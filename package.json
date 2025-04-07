@@ -16,13 +16,7 @@
     "@mui/joy": "^5.0.0-beta.52",
     "@mui/material": "^6.4.9",
     "bcryptjs": "^3.0.2",
-<<<<<<< HEAD
-<<<<<<< HEAD
     "cloudinary": "^2.6.0",
-=======
->>>>>>> origin/Norma-Homepage
-=======
->>>>>>> origin/Norma-Homepage
     "jsonwebtoken": "^9.0.2",
     "mssql": "^11.0.1",
     "multer": "^1.4.5-lts.2",
