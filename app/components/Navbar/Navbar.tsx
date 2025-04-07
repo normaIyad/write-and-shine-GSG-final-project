@@ -41,7 +41,11 @@ const NavBar = () => {
               href="/Signin"
               style={{ textDecoration: "none", color: "white" }}
             >
+<<<<<<< HEAD
               Home sing in
+=======
+             sing in
+>>>>>>> origin/Norma-Homepage
             </Link>
           </Button>
           <Button color="inherit">
