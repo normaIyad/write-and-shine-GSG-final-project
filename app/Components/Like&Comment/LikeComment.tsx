@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, {  useState } from 'react'
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
@@ -6,14 +6,15 @@ import { Box, Button } from '@mui/material';
 import { box, color, fount, mainbutton } from './style';
 import Comments from '../Comments/Comments';
 interface Props {
-  id: number;
+  id: number,
+  like_count : number
 }
-const LikeComment = ({id } : Props) => {
+const LikeComment = ({id , like_count } : Props) => {
   const postId = id;
   const storedUser = localStorage.getItem("user");
   const userdata = storedUser ? JSON.parse(storedUser) : null;
   const userId = userdata?.id;
-  const [likesCount, setLikesCount] = React.useState(0);
+  const [likesCount, setLikesCount] = React.useState(like_count);
   const [showComment, setShowComment] = useState(false);
   const addLike = async () => {
     const response = await fetch("api/likes", {
@@ -72,10 +73,6 @@ const LikeComment = ({id } : Props) => {
       console.error(err);
     }
   };
-  useEffect(() => {
-    likes();
-  }, [])
-
   return (
     <Box>
       <Box sx={box}>
