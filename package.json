@@ -17,7 +17,10 @@
     "@mui/material": "^6.4.9",
     "bcryptjs": "^3.0.2",
 <<<<<<< HEAD
+<<<<<<< HEAD
     "cloudinary": "^2.6.0",
+=======
+>>>>>>> origin/Norma-Homepage
 =======
 >>>>>>> origin/Norma-Homepage
     "jsonwebtoken": "^9.0.2",

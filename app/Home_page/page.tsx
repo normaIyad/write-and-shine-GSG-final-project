@@ -29,6 +29,7 @@ const HomePage = () => {
   return (
     <div>
 <<<<<<< HEAD
+<<<<<<< HEAD
      {posts.length > 0 ? (
       <>
       <CreateBlog onPostAdded={handleNewPost} />
@@ -37,6 +38,8 @@ const HomePage = () => {
         )) }
       </>
 =======
+=======
+>>>>>>> origin/Norma-Homepage
       {posts.length > 0 ? (
         <>
           <CreateBlog onPostAdded={handleNewPost} />
@@ -44,6 +47,9 @@ const HomePage = () => {
             <Plog key={plog.id} {...plog} />
           ))}
         </>
+<<<<<<< HEAD
+>>>>>>> origin/Norma-Homepage
+=======
 >>>>>>> origin/Norma-Homepage
       ) : (
         <Loader />

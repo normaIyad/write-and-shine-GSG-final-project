@@ -14,12 +14,15 @@ const SignUp: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 <<<<<<< HEAD
+<<<<<<< HEAD
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     localStorage.setItem("userData", JSON.stringify({ name, email, password }));
     alert("you are login sucssfully !");
 =======
+=======
+>>>>>>> origin/Norma-Homepage
   const [role, setRole] = useState("");
   const router = useRouter();
   const ApiaddUser = ()=>{
@@ -45,6 +48,9 @@ const SignUp: React.FC = () => {
       return;
     }
     alert("You are registered successfully!");
+<<<<<<< HEAD
+>>>>>>> origin/Norma-Homepage
+=======
 >>>>>>> origin/Norma-Homepage
     setName("");
     setEmail("");

@@ -42,7 +42,11 @@ const NavBar = () => {
               style={{ textDecoration: "none", color: "white" }}
             >
 <<<<<<< HEAD
+<<<<<<< HEAD
               Home sing in
+=======
+             sing in
+>>>>>>> origin/Norma-Homepage
 =======
              sing in
 >>>>>>> origin/Norma-Homepage
