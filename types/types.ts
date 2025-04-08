@@ -17,6 +17,12 @@ export interface Post {
     is_active: boolean,
     like_count: number
   }
+  export interface CustomPayload {
+    userId: number;
+    email: string;
+    iat: number;
+    exp: number;
+  }
 export interface Itags {
   id: number,
   name: string,

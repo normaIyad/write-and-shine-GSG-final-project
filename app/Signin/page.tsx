@@ -4,12 +4,13 @@ import styles from "../Signup/Signup.module.css";
 import Link from "next/link";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useUserStore } from "../store/useUserStore";
 
 const SignIn: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
-
+  const { setLoginFromToken } = useUserStore();
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -31,7 +32,8 @@ const SignIn: React.FC = () => {
       }
 
       alert("Login successful!");
-      localStorage.setItem("token", responseData.token);
+      localStorage.setItem("userToken", responseData.token);
+      setLoginFromToken(responseData.token);
       setEmail("");
       setPassword("");
       router.push("/"); 

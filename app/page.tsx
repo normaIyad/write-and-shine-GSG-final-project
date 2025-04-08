@@ -1,4 +1,3 @@
-import Footer from "./Footer/Footer";
 import HomePage from "./Home_page/page";
 
 export default function Home() {

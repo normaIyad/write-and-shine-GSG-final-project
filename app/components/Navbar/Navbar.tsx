@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
@@ -11,14 +11,36 @@ import Link from "next/link";
 import { Button } from "@mui/material";
 import Image from "next/image";
 import logo from "@/app/Images/logo1.png";
+import { useRouter } from "next/navigation";
+import { useUserStore } from "@/app/store/useUserStore";
+
+
 const NavBar = () => {
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const { isLogin, logout, userData ,setLoginFromToken } = useUserStore();
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [hydrated, setHydrated] = useState(false);
+  const router = useRouter();
+  useEffect(() => {
+    setHydrated(true);
+    const token = localStorage.getItem("userToken");
+    if (token) {
+      setLoginFromToken(token);
+    }
+  }, []);
+
+  if (!hydrated) return null;
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
 
   const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleLogout = () => {
+    logout();
+    router.push("/Signin");
     setAnchorEl(null);
   };
 
@@ -36,14 +58,16 @@ const NavBar = () => {
               Home
             </Link>
           </Button>
-          <Button color="inherit">
-            <Link
+          {!isLogin && (
+            <Button
+              color="inherit"
+              component={Link}
               href="/Signin"
-              style={{ textDecoration: "none", color: "white" }}
+              sx={{ textDecoration: "none", color: "white" }}
             >
               Sign In
-            </Link>
-          </Button>
+            </Button>
+          )}
           <Button color="inherit">
             <Link
               href="/about"
@@ -70,7 +94,10 @@ const NavBar = () => {
           onClick={handleMenuOpen}
           color="inherit"
         >
-          <Avatar alt="User Avatar" src="/profile.jpg" />
+          <Avatar
+            alt={userData?.email || "User"}
+            src={ "/default-avatar.jpg"}
+          />
         </IconButton>
         <Menu
           id="menu-appbar"
@@ -82,9 +109,14 @@ const NavBar = () => {
           onClose={handleMenuClose}
         >
           <MenuItem onClick={handleMenuClose}>
-            <Link href={"/PersonalDetails"}>Profile</Link>
+            <Link
+              href="/PersonalDetails"
+              style={{ textDecoration: "none", color: "inherit" }}
+            >
+              Profile
+            </Link>
           </MenuItem>
-          <MenuItem onClick={handleMenuClose}>Logout</MenuItem>
+          <MenuItem onClick={handleLogout}>Logout</MenuItem>
         </Menu>
       </Toolbar>
     </AppBar>
