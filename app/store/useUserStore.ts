@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import {jwtDecode} from "jwt-decode"; 
+import { jwtDecode } from "jwt-decode"; 
 import { CustomPayload } from "@/types/types";
 
 interface UserState {
@@ -10,17 +10,19 @@ interface UserState {
 }
 
 export const useUserStore = create<UserState>((set) => {
-   const token = localStorage.getItem("userToken");
   let initialLoginState = false;
   let initialUserData: CustomPayload | undefined = undefined;
 
-  if (token) {
-    try {
-      initialUserData = jwtDecode<CustomPayload>(token);
-      initialLoginState = true;
-    } catch (err) {
-      console.error("Invalid token in localStorage:", err);
-      localStorage.removeItem("userToken");
+  if (typeof window !== "undefined") {
+    const token = localStorage.getItem("userToken");
+    if (token) {
+      try {
+        initialUserData = jwtDecode<CustomPayload>(token);
+        initialLoginState = true;
+      } catch (err) {
+        console.error("Invalid token in localStorage:", err);
+        localStorage.removeItem("userToken");
+      }
     }
   }
 
@@ -41,7 +43,9 @@ export const useUserStore = create<UserState>((set) => {
     },
 
     logout: () => {
-      localStorage.removeItem("userToken");
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("userToken");
+      }
       set({ isLogin: false, userData: undefined });
     },
   };
