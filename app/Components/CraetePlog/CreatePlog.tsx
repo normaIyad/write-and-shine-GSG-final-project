@@ -29,7 +29,10 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import TextField from "@mui/material/TextField";
 import Alert from "@mui/material/Alert";
 import AlertTitle from "@mui/material/AlertTitle";
+import { useUserStore } from "@/app/store/useUserStore";
+
 const CreateBlog = ({ onPostAdded }: { onPostAdded: () => void }) => {
+  const { isLogin, userData } = useUserStore();
   const [isTyping, setIsTyping] = useState(false);
   const [text, setText] = useState("");
   const [title, setTitle] = useState("");
@@ -42,11 +45,14 @@ const CreateBlog = ({ onPostAdded }: { onPostAdded: () => void }) => {
     type: "success" | "info" | "warning" | "error";
     message: string;
   } | null>(null);
-
   const handleSubmit = () => {
-    const storedUser = localStorage.getItem("user");
-    const userdata = storedUser ? JSON.parse(storedUser) : null;
-    const userId = userdata?.id;
+    const userId = userData?.userId;
+    if (!isLogin) {
+      setAlert({
+        type: "warning",
+        message: "please login again!",
+      });
+    }
     if (title.length < 5) {
       setAlert({
         type: "warning",
@@ -76,20 +82,23 @@ const CreateBlog = ({ onPostAdded }: { onPostAdded: () => void }) => {
       setAlert({ type: "error", message: "Blog title should not be empty!" });
       return;
     }
+    if (!userId ) {
+      setAlert({
+        type: "error",
+        message: "User not found, please login again!",
+      });
+      return;
+    }
     const newPost: Post = {
       title: title,
       content: text,
-      author_id: userId ,
+      author_id: userId,
       category_id: chosen_cat?.id || 1,
       is_active: true,
       id: 0,
+      like_count: 0,
     };
-    if(!newPost.author_id){
-      setAlert({
-        type: "error",
-        message: "User not found, please login again!"
-      })
-    }
+
     addPost(newPost);
     setAlert({ type: "success", message: "Blog posted successfully!" });
     onPostAdded();
@@ -121,11 +130,24 @@ const CreateBlog = ({ onPostAdded }: { onPostAdded: () => void }) => {
     const selectedCategory = catigory.find((cat) => cat.id === selectedCatId);
     setChosen_cat(selectedCategory || undefined); // Handle undefined case
   };
-
   useEffect(() => {
     getCatigory();
     getTags();
+    if(!isLogin && isTyping){
+      setAlert({
+        type: "warning",
+        message: "please login again!",
+      });
+      return ;
+    }
   }, []);
+  const handleTextAreaFocus = () => {
+    if (!isLogin) {
+      setAlert({ type: "warning", message: "Please log in to create a blog post." });
+      return;
+    }
+    setIsTyping(true);
+  };
   const addPost = async (postdata: Post) => {
     const response = await fetch("/api/posts", {
       method: "POST",
@@ -141,10 +163,7 @@ const CreateBlog = ({ onPostAdded }: { onPostAdded: () => void }) => {
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    console.log(response);
   };
-  console.log(text);
-  console.log(tags);
   const ChosenTag = (tag: Itags) => {
     setChosen_tag(!Chosen_tag);
     setSelectedTags((prevTags) =>
@@ -152,8 +171,7 @@ const CreateBlog = ({ onPostAdded }: { onPostAdded: () => void }) => {
         ? prevTags.filter((id) => id !== tag.id)
         : [...prevTags, tag.id]
     );
-    console.log(tag);
-  };
+  }
   return (
     <Box
       sx={{
@@ -221,9 +239,9 @@ const CreateBlog = ({ onPostAdded }: { onPostAdded: () => void }) => {
           }}
         >
           <Image src={img.src} width={40} height={40} alt="User Avatar" />
-          {isTyping ? <Box>User name </Box> : null}
+          {isTyping ? <Box>User name : {userData?.email} </Box> : null}
         </Box>
-        {isTyping && (
+        {isTyping && isLogin && (
           <Button onClick={() => setIsTyping(false)}>
             <CancelIcon />
           </Button>
@@ -231,7 +249,7 @@ const CreateBlog = ({ onPostAdded }: { onPostAdded: () => void }) => {
       </Box>
 
       <Box sx={{ flexGrow: 1, position: "relative", zIndex: 5 }}>
-        {isTyping && (
+        {isTyping &&  (
           <Box>
             <TextField
               sx={textFieldStyles}
@@ -259,7 +277,7 @@ const CreateBlog = ({ onPostAdded }: { onPostAdded: () => void }) => {
           placeholder="Write a blog post..."
           value={text}
           onChange={(e) => setText(e.target.value)}
-          onFocus={() => setIsTyping(true)}
+          onFocus={handleTextAreaFocus}
         />
       </Box>
       {isTyping ? (

@@ -3,29 +3,20 @@ import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import Link from "next/link";
 import styles from "./Signup.module.css";
-import {
-  MenuItem,
-  Select,
-  SelectChangeEvent,
-} from "@mui/material";
+import { MenuItem, Select, SelectChangeEvent } from "@mui/material";
 
 const SignUp: React.FC = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    localStorage.setItem("userData", JSON.stringify({ name, email, password }));
-    alert("you are login sucssfully !");
-=======
-=======
->>>>>>> origin/Norma-Homepage
   const [role, setRole] = useState("");
   const router = useRouter();
-  const ApiaddUser = ()=>{
+
+  const handleChange = (event: SelectChangeEvent<string>) => {
+    setRole(event.target.value);
+  };
+
+  const ApiaddUser = () => {
     const data = {
       username: name,
       email: email,
@@ -39,37 +30,37 @@ const SignUp: React.FC = () => {
       },
       body: JSON.stringify(data),
     };
-    fetch("/api/auth/signup", options)
-  .then(async (res) => {
-    const data = await res.json();
-    if (!res.ok) {
-      console.error("Server responded with:", data);
-      alert(data.error || "Signup failed");
-      return;
-    }
-    alert("You are registered successfully!");
-<<<<<<< HEAD
->>>>>>> origin/Norma-Homepage
-=======
->>>>>>> origin/Norma-Homepage
-    setName("");
-    setEmail("");
-    setPassword("");
-    setRole("");
-    router.push("/Signin");
-  })
-  .catch((error) => {
-    console.error("Fetch error:", error);
-    alert("Network error. Please try again.");
-  });
 
-  }
+    fetch("/api/auth/signup", options)
+      .then(async (res) => {
+        const responseData = await res.json();
+        if (!res.ok) {
+          console.error("Server responded with:", responseData);
+          alert(responseData.error || "Signup failed");
+          return;
+        }
+
+        alert("You are registered successfully!");
+        setName("");
+        setEmail("");
+        setPassword("");
+        setRole("");
+        router.push("/Signin");
+      })
+      .catch((error) => {
+        console.error("Fetch error:", error);
+        alert("Network error. Please try again.");
+      });
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!name || !email || !password || !role) {
       alert("Please fill in all fields.");
       return;
     }
+
     if (
       password.length < 8 ||
       !/[A-Z]/.test(password) ||
@@ -80,12 +71,9 @@ const SignUp: React.FC = () => {
       );
       return;
     }
+
     ApiaddUser();
   };
-  const handleChange = (event: SelectChangeEvent<string>) => {
-    setRole(event.target.value);
-  };
-  console.log(role);
 
   return (
     <div className={styles.container}>
@@ -118,9 +106,9 @@ const SignUp: React.FC = () => {
         <Select
           id="role"
           value={role}
-          label="chose role "
           onChange={handleChange}
           displayEmpty
+          className={styles.input}
         >
           <MenuItem value="">
             <em>Choose role</em>

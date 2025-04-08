@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, TextField, Button, Card, CardContent, AlertTitle, Alert } from '@mui/material';
+import { useUserStore } from '@/app/store/useUserStore';
 
 interface IComment {
   id: number;
@@ -13,9 +14,8 @@ interface Props {
 }
 
 const Comments = ({ postId }: Props) => {
-  const storedUser = localStorage.getItem("user");
-  const userdata = storedUser ? JSON.parse(storedUser) : null;
-  const userId = userdata?.id;
+    const { isLogin, userData  } = useUserStore();
+  const userId = userData?.userId;
   const [data, setData] = useState<IComment[]>([]);
   const [newComment, setNewComment] = useState('');
   const [loading, setLoading] = useState(true);
@@ -55,6 +55,12 @@ const Comments = ({ postId }: Props) => {
   }, [postId]);
 
   const handleCommentSubmit = async () => {
+    if(!isLogin){
+      setAlert({
+        type: 'error',
+        message: 'Please log in ',
+      });
+    }
     if (!newComment) {
       setAlert({
         type: 'error',
@@ -81,10 +87,6 @@ const Comments = ({ postId }: Props) => {
       });
       setNewComment('');
       if (response.ok) {
-        setAlert({
-          type:'success',
-          message: 'Comment posted successfully.',
-        });
         getCommts();
       }
     }
@@ -100,15 +102,21 @@ const Comments = ({ postId }: Props) => {
         margin: '0 auto',
       }}
     >
-       {alerts && (
+      <Typography
+        variant="h6"
+        sx={{
+          marginBottom: 2,
+          fontWeight: 'bold',
+          color: '#333',
+          textAlign: 'center',
+        }}
+      >
+        Comments
+        {alerts && (
               <Alert
                 severity={alerts.type}
                 onClose={() => setAlert(null)}
                 sx={{
-                  position: "absolute",
-                  top: "20%",
-                  left: "50%",
-                  transform: "translate(-50%, -50%)",
                   width: "90%",
                   boxShadow: "0 6px 15px rgba(0, 100, 255, 0.3)",
                   borderRadius: "12px",
@@ -127,16 +135,6 @@ const Comments = ({ postId }: Props) => {
                 {alerts.message}
               </Alert>
             )}
-      <Typography
-        variant="h6"
-        sx={{
-          marginBottom: 2,
-          fontWeight: 'bold',
-          color: '#333',
-          textAlign: 'center',
-        }}
-      >
-        Comments
       </Typography>
 
       {
@@ -177,7 +175,7 @@ const Comments = ({ postId }: Props) => {
           </Card>
         ))
       )}
-{storedUser && <Box
+{isLogin && <Box
         sx={{
           display: 'flex',
           alignItems: 'center',

@@ -1,19 +1,18 @@
-import React, {  useState } from 'react'
+import React, { useState } from 'react'
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import { Box, Button } from '@mui/material';
 import { box, color, fount, mainbutton } from './style';
 import Comments from '../Comments/Comments';
+import { useUserStore } from '@/app/store/useUserStore';
 interface Props {
   id: number,
   like_count : number
 }
 const LikeComment = ({id , like_count } : Props) => {
   const postId = id;
-  const storedUser = localStorage.getItem("user");
-  const userdata = storedUser ? JSON.parse(storedUser) : null;
-  const userId = userdata?.id;
+  const { isLogin, userData  } = useUserStore();
   const [likesCount, setLikesCount] = React.useState(like_count);
   const [showComment, setShowComment] = useState(false);
   const addLike = async () => {
@@ -22,13 +21,12 @@ const LikeComment = ({id , like_count } : Props) => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         post_id: postId,
-        user_id: userId,
+        user_id: userData?.userId,
       }),
     });
     if (!response.ok) {
       throw new Error("Failed to fetch data");
     }
-    console.log(await response.json());
   };
   const removeLike = async () => {
     const response = await fetch("api/likes", {
@@ -36,13 +34,12 @@ const LikeComment = ({id , like_count } : Props) => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         post_id: postId,
-        user_id: userId,
+        user_id: userData?.userId,
       }),
     });
     if (!response.ok) {
       throw new Error("Failed to fetch data");
     }
-    console.log(await response.json());
   };
   const likes = async () => {
     const response = await fetch(`/api/likes/${postId}`);
@@ -51,13 +48,12 @@ const LikeComment = ({id , like_count } : Props) => {
     }
     const data = await response.json();
     setLikesCount(data.data.length);
-    console.log(data.data);
   }
 
 
   const [isLiked, setIsLiked] = React.useState(false);
   const likeClick = async () => {
-    if (!userId) {
+    if (!isLogin) {
       alert("Please Login to view likes");
       return;
     }
