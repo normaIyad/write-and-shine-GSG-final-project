@@ -9,12 +9,13 @@ const SignUp: React.FC = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("");
   const router = useRouter();
+  type UserRole = "user" | "admin";
+const [role, setRole] = useState<UserRole | "">("");
 
-  const handleChange = (event: SelectChangeEvent<string>) => {
-    setRole(event.target.value);
-  };
+const handleChange = (event: SelectChangeEvent<string>) => {
+  setRole(event.target.value as UserRole);
+};
 
   const ApiaddUser = () => {
     const data = {

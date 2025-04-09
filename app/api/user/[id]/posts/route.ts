@@ -8,7 +8,6 @@ export async function GET(
     const { id } = await params;
     const userId = parseInt(id);
     console.log(id);
-
     if (isNaN(userId)) {
       return NextResponse.json({ message: "Invalid user ID" }, { status: 400 });
     }

@@ -96,7 +96,7 @@ const CreateBlog = ({ onPostAdded }: { onPostAdded: () => void }) => {
       category_id: chosen_cat?.id || 1,
       is_active: true,
       id: 0,
-      like_count: 0,
+      like_count: 0 ,
     };
 
     addPost(newPost);

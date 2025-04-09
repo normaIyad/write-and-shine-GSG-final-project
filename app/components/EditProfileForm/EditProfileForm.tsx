@@ -1,18 +1,112 @@
-import { Box,Typography,Button,TextField } from "@mui/material";
-const EditProfileForm = () => (
+import { useUserStore } from "@/app/store/useUserStore";
+import { Box, Typography, Button, TextField, CircularProgress } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+const EditProfileForm = () => {
+    const router = useRouter();
+  const { userData } = useUserStore();
+  const [name, setName] = useState(userData?.username || "");
+  const [jobtitle, setJobTitle] = useState(userData?.job_title || "");
+  const [education, setEducation] = useState(userData?.education || "");
+  const [biography, setBiography] = useState(userData?.biography || "");
+  const [img, setImg] = useState<File | null>(null);
+  const [loader, setLoader] = useState(false);
+
+  const validateForm = () => {
+    if (!name || name.length < 5) return "Name must be at least 5 characters.";
+    if (!jobtitle || jobtitle.length < 3) return "Job title must be at least 3 characters.";
+    if (!education || education.length < 5) return "Education must be at least 5 characters.";
+    if (!biography || biography.length < 10) return "Biography must be at least 10 characters.";
+    return null;
+  };
+
+  const getImg = async () => {
+    if (img && userData?.userId) {
+      const formData = new FormData();
+      formData.append("file", img);
+      formData.append("user_id", userData.userId);
+
+      try {
+        const response = await fetch("/api/user/upload-photo", {
+          method: "POST",
+          body: formData,
+        });
+
+        const data = await response.json();
+        if (data?.imageUrl) {
+          return data.imageUrl;
+        } else {
+          console.error("Image upload failed:", data?.error);
+          return null;
+        }
+      } catch (err) {
+        console.error("Error during image upload:", err);
+        return null;
+      }
+    }
+    return null;
+  };
+
+  const editData = async () => {
+    try {
+      const imageUrl = await getImg();
+      const newData = {
+        id: userData?.userId,
+        job_title: jobtitle,
+        education,
+        biography,
+        username: name,
+        ...(imageUrl && { image: imageUrl }),
+      };
+
+      const response = await fetch(`/api/user/${userData?.userId}/profile`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newData),
+      });
+
+      const result = await response.json();
+      if (response.ok) {
+        alert("Profile updated successfully.");
+      } else {
+        console.error("Profile update failed:", result?.error);
+        alert("Failed to update profile.");
+      }
+    } catch (err) {
+      console.error("Error during profile update:", err);
+      alert("An error occurred while updating your profile.");
+    } finally {
+      setLoader(false);
+    }
+  };
+
+  const handleSubmit = () => {
+    const validationError = validateForm();
+
+    if (validationError) {
+      alert(validationError);
+      return;
+    }
+    setLoader(true);
+    editData();
+    router.push("/PersonalDetails"); 
+  };
+
+  return (
     <Box
       sx={{
         display: "flex",
-        justifyContent:"center",
-        padding:2,
+        justifyContent: "center",
+        padding: 2,
         height: "100%",
         width: "100%",
       }}
     >
       <Box
         sx={{
-          width:"60%",
-          height:"60%",
+          width: "60%",
           padding: 4,
           backgroundColor: "#fff",
           borderRadius: 2,
@@ -22,38 +116,60 @@ const EditProfileForm = () => (
         <Typography variant="h4" fontWeight="bold" color="#1976d2" gutterBottom>
           Edit Profile
         </Typography>
-        
 
-        <label
-            htmlFor="formFile"
-            className="mb-2 inline-block text-neutral-700 dark:text-neutral-200"
-          >
-          Default file input example
-          </label>
-          <input
-            className="relative m-0 block w-full min-w-0 flex-auto rounded border border-solid border-neutral-300 bg-clip-padding px-3 py-[0.32rem] text-base font-normal text-neutral-700 transition duration-300 ease-in-out file:-mx-3 file:-my-[0.32rem] file:overflow-hidden file:rounded-none file:border-0 file:border-solid file:border-inherit file:bg-neutral-100 file:px-3 file:py-[0.32rem] file:text-neutral-700 file:transition file:duration-150 file:ease-in-out file:[border-inline-end-width:1px] file:[margin-inline-end:0.75rem] hover:file:bg-neutral-200 focus:border-primary focus:text-neutral-700 focus:shadow-te-primary focus:outline-none dark:border-neutral-600 dark:text-neutral-200 dark:file:bg-neutral-700 dark:file:text-neutral-100 dark:focus:border-primary"
-            type="file"
-           id="formFile"
-          />
-          
+        <input
+          type="file"
+          accept="image/*"
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (file) setImg(file);
+          }}
+        />
+
         <Box display="flex" flexDirection="column" gap={2} marginTop={2}>
-      
-          <TextField label="Full Name" defaultValue="Husni Ishtayeh" variant="outlined" fullWidth />
-          <TextField label="Job Title" defaultValue="Software Engineer" variant="outlined" fullWidth />
-          <TextField label="Education" defaultValue="Bachelor of Computer Engineering" variant="outlined" fullWidth />
+          <TextField
+            label="Full Name"
+            variant="outlined"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            fullWidth
+          />
+          <TextField
+            label="Job Title"
+            variant="outlined"
+            value={jobtitle}
+            onChange={(e) => setJobTitle(e.target.value)}
+            fullWidth
+          />
+          <TextField
+            label="Education"
+            variant="outlined"
+            value={education}
+            onChange={(e) => setEducation(e.target.value)}
+            fullWidth
+          />
           <TextField
             label="Biography"
-            defaultValue="Passionate about creating user-friendly and visually appealing web interfaces with modern technologies."
             variant="outlined"
+            value={biography}
+            onChange={(e) => setBiography(e.target.value)}
             fullWidth
             multiline
             rows={4}
           />
-          <Button variant="contained" color="primary" sx={{ marginTop: 2 }}>
-            Save Changes
+          <Button
+            variant="contained"
+            color="primary"
+            sx={{ marginTop: 2 }}
+            onClick={handleSubmit}
+            disabled={loader}
+          >
+            {loader ? <CircularProgress size={24} /> : "Save Changes"}
           </Button>
         </Box>
       </Box>
     </Box>
   );
-  export default EditProfileForm;
+};
+
+export default EditProfileForm;

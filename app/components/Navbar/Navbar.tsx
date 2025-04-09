@@ -14,7 +14,6 @@ import logo from "@/app/Images/logo1.png";
 import { useRouter } from "next/navigation";
 import { useUserStore } from "@/app/store/useUserStore";
 
-
 const NavBar = () => {
   const { isLogin, logout, userData ,setLoginFromToken } = useUserStore();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
