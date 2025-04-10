@@ -13,7 +13,7 @@ import {
   ThemeProvider,
   Typography,
 } from "@mui/material";
-import { Icatigory, Itags, Post } from "@/types/types";
+import { Icatigory, Itags, Iuser, Post } from "@/types/types";
 import {
   position,
   theme,
@@ -40,6 +40,7 @@ const CreateBlog = ({ onPostAdded }: { onPostAdded: () => void }) => {
   const [catigory, setCat] = useState<Icatigory[]>([]);
   const [chosen_cat, setChosen_cat] = useState<Icatigory>();
   const [Chosen_tag, setChosen_tag] = useState(false);
+  const [data, setData] = useState<Iuser | null>(null);
   const [selectedTags, setSelectedTags] = useState<number[]>([]);
   const [alerts, setAlert] = useState<{
     type: "success" | "info" | "warning" | "error";
@@ -82,7 +83,7 @@ const CreateBlog = ({ onPostAdded }: { onPostAdded: () => void }) => {
       setAlert({ type: "error", message: "Blog title should not be empty!" });
       return;
     }
-    if (!userId ) {
+    if (!userId) {
       setAlert({
         type: "error",
         message: "User not found, please login again!",
@@ -96,7 +97,7 @@ const CreateBlog = ({ onPostAdded }: { onPostAdded: () => void }) => {
       category_id: chosen_cat?.id || 1,
       is_active: true,
       id: 0,
-      like_count: 0 ,
+      like_count: 0,
     };
 
     addPost(newPost);
@@ -130,17 +131,33 @@ const CreateBlog = ({ onPostAdded }: { onPostAdded: () => void }) => {
     const selectedCategory = catigory.find((cat) => cat.id === selectedCatId);
     setChosen_cat(selectedCategory || undefined); // Handle undefined case
   };
+  const fetchUserDetails = async () => {
+    try {
+      const response = await fetch(`/api/user/${userData?.userId}`);
+      const user = await response.json();
+      if (user && user.length > 0) {
+        setData(user[0]);
+      } else {
+        console.error("User data not found in response");
+      }
+    } catch (error) {
+      console.error("Error fetching user details:", error);
+    }
+  };
   useEffect(() => {
     getCatigory();
     getTags();
-    if(!isLogin && isTyping){
+    if (userData) {
+      fetchUserDetails();
+    }
+    if (!isLogin && isTyping) {
       setAlert({
         type: "warning",
         message: "please login again!",
       });
-      return ;
+      return;
     }
-  }, []);
+  }, [userData]);
   const handleTextAreaFocus = () => {
     if (!isLogin) {
       setAlert({ type: "warning", message: "Please log in to create a blog post." });
@@ -200,18 +217,18 @@ const CreateBlog = ({ onPostAdded }: { onPostAdded: () => void }) => {
               alerts.type === "success"
                 ? "#e0f7e9"
                 : alerts.type === "error"
-                ? "#fbe4e4"
-                : alerts.type === "warning"
-                ? "#fff7e5"
-                : "#e3f2fd", // Dynamic background colors
+                  ? "#fbe4e4"
+                  : alerts.type === "warning"
+                    ? "#fff7e5"
+                    : "#e3f2fd", // Dynamic background colors
             color:
               alerts.type === "success"
                 ? "#2e7d32"
                 : alerts.type === "error"
-                ? "#c62828"
-                : alerts.type === "warning"
-                ? "#ed6c02"
-                : "#0277bd", // Matching text colors
+                  ? "#c62828"
+                  : alerts.type === "warning"
+                    ? "#ed6c02"
+                    : "#0277bd", // Matching text colors
             cursor: "pointer",
             zIndex: 100,
             textAlign: "center",
@@ -238,8 +255,23 @@ const CreateBlog = ({ onPostAdded }: { onPostAdded: () => void }) => {
             borderRadius: 10,
           }}
         >
-          <Image src={img.src} width={40} height={40} alt="User Avatar" />
-          {isTyping ? <Box>User name : {userData?.email} </Box> : null}
+          <Box sx={{
+            width: 50,
+            height: 50,
+            borderRadius: "50%",
+            overflow: "hidden",
+            mr: 2,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            border: "1px solid #ddd",
+          }}>
+            <Image src={data?.image ?? img.src} alt={data?.username || "user"}
+              width={50}
+              height={50}
+              unoptimized />
+          </Box>
+          {isTyping ? <Box>User name : {data?.username} </Box> : null}
         </Box>
         {isTyping && isLogin && (
           <Button onClick={() => setIsTyping(false)}>
@@ -249,7 +281,7 @@ const CreateBlog = ({ onPostAdded }: { onPostAdded: () => void }) => {
       </Box>
 
       <Box sx={{ flexGrow: 1, position: "relative", zIndex: 5 }}>
-        {isTyping &&  (
+        {isTyping && (
           <Box>
             <TextField
               sx={textFieldStyles}

@@ -12,8 +12,19 @@ export async function GET(
       return NextResponse.json({ error: "Invalid post ID" }, { status: 400 });
     }
 
+    // Adjust the query to join with the `users` table and fetch user data
     const [posts] = await db.query(
-      `SELECT * FROM posts WHERE id = ? AND is_active = 1`,
+      `
+          SELECT 
+          posts.*, 
+           users.id AS user_id, 
+           users.username AS user_name, 
+           users.email AS user_email, 
+           users.image AS user_image 
+           FROM posts
+           LEFT JOIN users ON posts.author_id = users.id
+          WHERE posts.id = ? AND posts.is_active = 1;
+      `,
       [postId]
     );
 
@@ -31,6 +42,7 @@ export async function GET(
   }
 }
 
+
 // Define a schema to validate the body
 const editPostSchema = z.object({
   title: z.string().min(1, "Title is required").optional(),
@@ -43,7 +55,7 @@ export async function PATCH(
   context: { params: { id: string } }
 ) {
   try {
-    const { id } =await context.params;
+    const { id } = await context.params;
     const postId = parseInt(id);
     const body = await req.json();
 

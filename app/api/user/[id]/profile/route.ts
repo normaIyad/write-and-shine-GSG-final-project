@@ -1,24 +1,21 @@
 import { NextResponse } from "next/server";
 import db from "@/Database/db";
 
+const sendError = (message: string, status = 400) =>
+  NextResponse.json({ error: message }, { status });
+
 export async function POST(req: Request) {
   try {
     const body = await req.json();
     const { id, job_title, education, biography, username } = body;
 
     if (!id || !job_title || !education || !biography || !username) {
-      return NextResponse.json(
-        { error: "All fields (id, job_title, education, biography, username) are required" },
-        { status: 400 }
-      );
+      return sendError("All fields (id, job_title, education, biography, username) are required");
     }
 
-    const [existingProfile] = await db.query(
-      `SELECT * FROM user_profiles WHERE user_id = ?`,
-      [id]
-    );
+    const [existing] = await db.query(`SELECT 1 FROM user_profiles WHERE user_id = ?`, [id]);
 
-    if (existingProfile) {
+    if (existing) {
       await db.query(
         `UPDATE user_profiles 
          SET job_title = ?, education = ?, biography = ?, username = ? 
@@ -26,35 +23,26 @@ export async function POST(req: Request) {
         [job_title, education, biography, username, id]
       );
 
-      return NextResponse.json(
-        { message: "Profile updated successfully" },
-        { status: 200 }
-      );
-    } else {
-      await db.query(
-        `INSERT INTO user_profiles(user_id, job_title, education, biography, username) 
-         VALUES (?, ?, ?, ?, ?)`,
-        [id, job_title, education, biography, username]
-      );
-
-      return NextResponse.json(
-        { message: "New user profile created" },
-        { status: 201 }
-      );
+      return NextResponse.json({ message: "Profile updated successfully" }, { status: 200 });
     }
-  } catch (err) {
-    console.error("Profile update error:", err);
-    return NextResponse.json(
-      { error: "Something went wrong" },
-      { status: 500 }
+
+    await db.query(
+      `INSERT INTO user_profiles(user_id, job_title, education, biography, username) 
+       VALUES (?, ?, ?, ?, ?)`,
+      [id, job_title, education, biography, username]
     );
+
+    return NextResponse.json({ message: "New user profile created" }, { status: 201 });
+
+  } catch (error) {
+    console.error("POST /user-profile error:", error);
+    return sendError("Something went wrong", 500);
   }
 }
 
-
 export async function GET(req: Request, { params }: { params: { id: string } }) {
   try {
-    const { id } = params;
+    const { id } = await params;
 
     const [user] = await db.query(
       `SELECT 

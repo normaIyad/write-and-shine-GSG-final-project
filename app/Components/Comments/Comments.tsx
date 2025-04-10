@@ -1,3 +1,4 @@
+"use client";
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, TextField, Button, Card, CardContent, AlertTitle, Alert } from '@mui/material';
 import { useUserStore } from '@/app/store/useUserStore';

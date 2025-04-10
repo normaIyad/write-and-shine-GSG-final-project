@@ -44,6 +44,7 @@ export interface Post {
     email: string;
     iat: number;
     exp: number;
+    img : string ;
   }
 export interface Itags {
   id: number,
@@ -74,6 +75,16 @@ export interface Iuser {
   post_count : number , 
   comment_count : number , 
   like_count : number
+}
+export interface IUdata{
+  id: number,
+  username: string,
+  email: string,
+  role: string,
+  image: string,
+  post_count: number,
+  comment_count: number,
+  like_count: number
 }
 
 export default IPlog;

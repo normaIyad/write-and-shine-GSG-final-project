@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+"use client";
+import React, { useEffect, useState } from 'react'
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
@@ -69,6 +70,11 @@ const LikeComment = ({id , like_count } : Props) => {
       console.error(err);
     }
   };
+  useEffect(() => {
+    if (like_count === null) {
+      setLikesCount(0); 
+    }
+  }, [like_count]);
   return (
     <Box>
       <Box sx={box}>

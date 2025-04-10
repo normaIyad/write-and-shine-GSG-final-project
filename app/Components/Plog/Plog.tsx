@@ -6,6 +6,7 @@ import ReadMore from "./ReadMore";
 import img from "@/public/Account_user/account_circle.svg";
 
 import LikeComment from "../Like&Comment/LikeComment";
+
 interface PlogProps {
   id: number;
   content: string;
@@ -55,8 +56,8 @@ const Plog = ({ id, content, title, author_id, like_count, author_name, author_i
         </Box>
         <Box>
           <Typography variant="subtitle1" fontWeight="bold" sx={{ color: "primary.main" }}>
-            <Link href={`/user/${author_id}`}>
-              {author_name || "Loading..."}
+            <Link href={`/profile/${author_id}`}>
+              {author_name }
             </Link>
           </Typography>
         </Box>

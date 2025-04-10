@@ -1,26 +1,36 @@
 import { useUserStore } from "@/app/store/useUserStore";
-import { Box, Typography, Button, TextField, CircularProgress } from "@mui/material";
-import React, { useState, useEffect } from "react";
+import {
+  Box,
+  Typography,
+  Button,
+  TextField,
+  CircularProgress,
+} from "@mui/material";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 const EditProfileForm = () => {
-    const router = useRouter();
+  const router = useRouter();
   const { userData } = useUserStore();
-  const [name, setName] = useState(userData?.username || "");
-  const [jobtitle, setJobTitle] = useState(userData?.job_title || "");
-  const [education, setEducation] = useState(userData?.education || "");
-  const [biography, setBiography] = useState(userData?.biography || "");
+  const [name, setName] = useState("");
+  const [jobtitle, setJobTitle] = useState("");
+  const [education, setEducation] = useState("");
+  const [biography, setBiography] = useState("");
   const [img, setImg] = useState<File | null>(null);
   const [loader, setLoader] = useState(false);
 
   const validateForm = () => {
     if (!name || name.length < 5) return "Name must be at least 5 characters.";
-    if (!jobtitle || jobtitle.length < 3) return "Job title must be at least 3 characters.";
-    if (!education || education.length < 5) return "Education must be at least 5 characters.";
-    if (!biography || biography.length < 10) return "Biography must be at least 10 characters.";
+    if (!jobtitle || jobtitle.length < 3)
+      return "Job title must be at least 3 characters.";
+    if (!education || education.length < 5)
+      return "Education must be at least 5 characters.";
+    if (!biography || biography.length < 10)
+      return "Biography must be at least 10 characters.";
     return null;
   };
 
   const getImg = async () => {
+    if (!img) return null;
     if (img && userData?.userId) {
       const formData = new FormData();
       formData.append("file", img);
@@ -49,7 +59,7 @@ const EditProfileForm = () => {
 
   const editData = async () => {
     try {
-      const imageUrl = await getImg();
+      const imageUrl = await getImg(userData.userId);
       const newData = {
         id: userData?.userId,
         job_title: jobtitle,
@@ -81,17 +91,27 @@ const EditProfileForm = () => {
       setLoader(false);
     }
   };
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) setImg(file);
+  };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const validationError = validateForm();
-
     if (validationError) {
       alert(validationError);
       return;
     }
     setLoader(true);
-    editData();
-    router.push("/PersonalDetails"); 
+    await editData(); // wait for it to finish before navigating
+    setName("");
+    setJobTitle("");
+    setEducation("");
+    setBiography("");
+    setImg(null);
+    setTimeout(() => {
+      router.push(`/profile/${userData?.userId}`);
+    }, 300);
   };
 
   return (
@@ -117,14 +137,16 @@ const EditProfileForm = () => {
           Edit Profile
         </Typography>
 
-        <input
-          type="file"
-          accept="image/*"
-          onChange={(e) => {
-            const file = e.target.files?.[0];
-            if (file) setImg(file);
-          }}
-        />
+        <Button variant="outlined" component="label">
+          Upload Profile Picture
+          <input
+            hidden
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+          />
+        </Button>
+        <Typography variant="body2">{img?.name}</Typography>
 
         <Box display="flex" flexDirection="column" gap={2} marginTop={2}>
           <TextField

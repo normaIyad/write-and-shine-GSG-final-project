@@ -18,7 +18,9 @@ export const useUserStore = create<UserState>((set) => {
     if (token) {
       try {
         initialUserData = jwtDecode<CustomPayload>(token);
+
         initialLoginState = true;
+        
       } catch (err) {
         console.error("Invalid token in localStorage:", err);
         localStorage.removeItem("userToken");

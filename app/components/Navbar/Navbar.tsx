@@ -13,19 +13,42 @@ import Image from "next/image";
 import logo from "@/app/Images/logo1.png";
 import { useRouter } from "next/navigation";
 import { useUserStore } from "@/app/store/useUserStore";
+import { Iuser } from "@/types/types";
 
 const NavBar = () => {
   const { isLogin, logout, userData ,setLoginFromToken } = useUserStore();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [hydrated, setHydrated] = useState(false);
+  const [data, setData] = useState<Iuser | null>(null);
   const router = useRouter();
+
   useEffect(() => {
     setHydrated(true);
     const token = localStorage.getItem("userToken");
     if (token) {
       setLoginFromToken(token);
     }
-  }, []);
+  
+    const fetchUserDetails = async () => {
+      try {
+        const response = await fetch(`/api/user/${userData?.userId}`);
+        const user = await response.json();
+        if (user && user.length > 0) {
+          setData(user[0]);
+        } else {
+          console.error("User data not found in response");
+        }
+      } catch (error) {
+        console.error("Error fetching user details:", error);
+      }
+    };
+  
+    if (userData?.userId) {
+      fetchUserDetails();
+    }
+  }, [userData?.userId]);
+  
+
 
   if (!hydrated) return null;
 
@@ -94,8 +117,8 @@ const NavBar = () => {
           color="inherit"
         >
           <Avatar
-            alt={userData?.email || "User"}
-            src={ "/default-avatar.jpg"}
+         alt={userData?.email || "User"}
+         src={data?.image || "/public/abous-us.png"}
           />
         </IconButton>
         <Menu
