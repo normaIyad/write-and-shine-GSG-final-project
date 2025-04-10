@@ -1,52 +1,86 @@
 "use client";
-import React, { useState } from "react";
-import {
-  Box,
-  Grid,
-  Typography,
-  Avatar,
-  Paper,
-  Divider,
-  Button,
-} from "@mui/material";
-import BlogCard from "../Components/BlogCard/BlogCard";
+import React, { useEffect, useState } from "react";
+import { Box, Grid, Typography, Avatar, Paper, Divider, Button } from "@mui/material";
 import EditProfileForm from "../Components/EditProfileForm/EditProfileForm";
-const blogs = [
-  {
-    id: 1,
-    title: "The Journey of a Frontend Developer",
-    content:
-      "Frontend development is an exciting field that evolves constantly...",
-    likes: 120,
-    comments: [
-      { id: 1, user: "John Doe", text: "Great blog post! I learned a lot." },
-      { id: 2, user: "Alice Smith", text: "Looking forward to more articles!" },
-    ],
-  },
-  {
-    id: 2,
-    title: "Why React is Amazing",
-    content:
-      "React has taken the frontend world by storm with its component-based architecture...",
-    likes: 90,
-    comments: [
-      { id: 1, user: "Jane Doe", text: "I totally agree, React is fantastic!" },
-    ],
-  },
-  {
-    id: 3,
-    title: "Tips for Mastering JavaScript",
-    content:
-      "Mastering JavaScript involves understanding its core concepts deeply...",
-    likes: 80,
-    comments: [],
-  },
-];
+import { useUserStore } from "../store/useUserStore";
+import { Iuser, Post, UserProfile } from "@/types/types";
+import Plog from "../Components/Plog/Plog";
 
-const PersonalDetailsPage = () => {
+const UserProfilePage = () => {
+  const { userData } = useUserStore(); // Assuming userData is available from a store
   const [showEditForm, setShowEditForm] = useState(false);
+  const [userDetails, setUserDetails] = useState<Iuser | null>(null);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchUserData = async () => {
+    try {
+      const response = await fetch(`/api/user/${userData?.userId}`);
+      const data = await response.json();
+      if (data && data.length > 0) {
+        setUserDetails(data[0]);
+      } else {
+        console.error("User data not found in response");
+      }
+    } catch (error) {
+      console.error("Error fetching user details:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchUserProfile = async () => {
+    try {
+      const response = await fetch(`/api/user/${userData?.userId}/profile`);
+      const data = await response.json();
+      if (data && data.length > 0) {
+        setProfile(data[0]);
+      } else {
+        console.error("User profile not found in response");
+      }
+    } catch (error) {
+      console.error("Error fetching user profile:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchUserPosts = async () => {
+    try {
+      const response = await fetch(`/api/user/${userData?.userId}/posts`);
+      const data = await response.json();
+      if (data && data.posts) {
+        setPosts(data.posts);
+      } else {
+        console.error("No posts found in response");
+      }
+    } catch (error) {
+      console.error("Error fetching user posts:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (userData?.userId) {
+      fetchUserData();
+      fetchUserProfile();
+      fetchUserPosts();
+    }
+  }, [userData]);
+
+  if (loading) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+        <Typography variant="h6">Loading your profile...</Typography>
+      </Box>
+    );
+  }
+
   return (
     <Grid container sx={{ height: "100vh", padding: 2 }}>
+      {/* User Info Section */}
       <Grid item xs={12} md={4} lg={3} sx={{ backgroundColor: "#e3f2fd" }}>
         <Paper
           elevation={3}
@@ -59,15 +93,15 @@ const PersonalDetailsPage = () => {
         >
           <Box display="flex" flexDirection="column" alignItems="center">
             <Avatar
-              alt="Husni Ishtayeh"
-              src="/static/images/avatar.png"
+              alt={userDetails?.username || "Unknown User"}
+              src={userDetails?.image || "/default-avatar.png"}
               sx={{ width: 120, height: 120, marginBottom: 2 }}
             />
             <Typography variant="h5" gutterBottom>
-              Husni Ishtayeh
+              {userDetails?.username || "Unknown User"}
             </Typography>
             <Typography variant="body1" color="textSecondary" gutterBottom>
-              Software Engineer
+              {userDetails?.role || "Role Unavailable"}
             </Typography>
             <Button
               variant="contained"
@@ -81,26 +115,13 @@ const PersonalDetailsPage = () => {
 
           <Divider sx={{ marginY: 2 }} />
 
+          {/* User Profile Details */}
           <Box>
             <Typography variant="subtitle1" color="primary">
               Education
             </Typography>
             <Typography variant="body2" color="textSecondary">
-              Bachelor of Computer Engineering, An-Najah National University
-            </Typography>
-          </Box>
-
-          <Divider sx={{ marginY: 2 }} />
-
-          <Box>
-            <Typography variant="subtitle1" color="primary">
-              Followers & Likes
-            </Typography>
-            <Typography variant="body2" color="textSecondary">
-              Followers: 1,000
-            </Typography>
-            <Typography variant="body2" color="textSecondary">
-              Likes: 5,000
+              {profile?.education || "Not provided"}
             </Typography>
           </Box>
 
@@ -111,13 +132,16 @@ const PersonalDetailsPage = () => {
               Biography
             </Typography>
             <Typography variant="body1" sx={{ marginTop: 1 }}>
-              Passionate about creating user-friendly and visually appealing web
-              interfaces with modern technologies.
+              {profile?.biography || "Biography not provided"}
             </Typography>
           </Box>
         </Paper>
       </Grid>
+
+      {/* Divider */}
       <Box sx={{ width: "3px", backgroundColor: "#1976d2", marginX: 2 }}></Box>
+
+      {/* Blog Posts Section */}
       <Grid item xs={12} md={8} lg={8.5}>
         {showEditForm ? (
           <EditProfileForm />
@@ -133,21 +157,29 @@ const PersonalDetailsPage = () => {
               }}
             >
               <Typography variant="h5" fontWeight="bold" color="#1976d2">
-                {" "}
-                Husni Ishtayeh Blogs{" "}
+                {userDetails?.username?.trim()}'s Blogs
               </Typography>
             </Box>
-            {blogs.map((blog) => (
-              <BlogCard
-                key={blog.id}
-                title={blog.title}
-                content={blog.content}
-                likes={blog.likes}
-                comments={blog.comments}
-                onDelete={() => {
-                  console.log("Delete blog with ID:", blog.id);}}
-              />
-            ))}
+
+            {posts.length === 0 ? (
+              <Typography variant="body1" color="textSecondary">
+                No posts available.
+              </Typography>
+            ) : (
+              posts.map((post) => (
+                <Plog
+                  key={post.id}
+                  id={post.id}
+                  content={post.content}
+                  title={post.title}
+                  like_count={post.like_count}
+                  author_name={userDetails?.username}
+                  author_id={post.author_id}
+                  author_image={userDetails?.image}
+                  is_active={post.is_active || true}
+                />
+              ))
+            )}
           </Box>
         )}
       </Grid>
@@ -155,4 +187,4 @@ const PersonalDetailsPage = () => {
   );
 };
 
-export default PersonalDetailsPage;
+export default UserProfilePage;
