@@ -9,9 +9,9 @@ const commentSchema = z.object({
   content: z.string().min(1, "Comment cannot be empty"),
 });
 const editSchema = z.object({
-    content: z.string().min(1, "Comment content cannot be empty"),
-  });
- 
+  content: z.string().min(1, "Comment content cannot be empty"),
+});
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
@@ -46,62 +46,62 @@ export async function POST(req: NextRequest) {
     );
   }
 }
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
-    try {
-      const commentId = parseInt(params.id);
-      const body = await req.json();
-      const parsed = editSchema.safeParse(body);
-      if (!parsed.success) {
-        return NextResponse.json({ error: parsed.error.format() }, { status: 400 });
-      }
-  
-      const { content } = parsed.data;
-  
-      const [result] = await db.query(
-        `UPDATE comments SET content = ?, updated_at = NOW() WHERE id = ?`,
-        [content, commentId]
-      );
-  
-      return NextResponse.json({ message: "Comment updated successfully" }, { status: 200 });
-    } catch (error) {
-      console.error("Edit comment error:", error);
-      return NextResponse.json({ error: "Internal server error" }, { status: 500 });
-    }
-  }
 
-  export async function DELETE(_req: NextRequest, { params }: { params: { id: string } }) {
-    try {
-      const commentId = parseInt(params.id);
-  
-      // Soft delete: just set is_active to 0
-      const [result] = await db.query(
-        `UPDATE comments SET is_active = 0 WHERE id = ?`,
-        [commentId]
-      );
-  
-      return NextResponse.json({ message: "Comment deleted (soft) successfully" }, { status: 200 });
-    } catch (error) {
-      console.error("Delete comment error:", error);
-      return NextResponse.json({ error: "Internal server error" }, { status: 500 });
-    }
+
+export async function DELETE(
+  _req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const commentId = parseInt(params.id);
+
+    // Soft delete: just set is_active to 0
+    const [result] = await db.query(
+      `UPDATE comments SET is_active = 0 WHERE id = ?`,
+      [commentId]
+    );
+
+    return NextResponse.json(
+      { message: "Comment deleted (soft) successfully" },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Delete comment error:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
-  
+}
+
+
 export async function GET(req: NextRequest) {
-    try {
-      const { post_id } = await req.json();
-  
-      if (!post_id) {
-        return NextResponse.json({ error: "post_id is required" }, { status: 400 });
-      }
-  
-      const [comments] = await db.query(
-        `SELECT * FROM comments WHERE post_id = ? AND is_active = 1 ORDER BY created_at DESC`,
-        [post_id]
-      );
-  
-      return NextResponse.json({ comments }, { status: 200 });
-    } catch (error) {
-      console.error("Get comments by post_id error:", error);
-      return NextResponse.json({ error: "Internal server error" }, { status: 500 });
-    }
+  try {
+    const [comments] = await db.query(
+      `
+      SELECT 
+        c.*, 
+        u.id AS user_id,
+        u.username AS user_name,
+        u.email AS user_email,
+        u.image AS user_image,
+        p.id AS post_id,
+        p.title AS post_title,
+        p.content AS post_content
+      FROM comments c
+      JOIN users u ON c.user_id = u.id
+      JOIN posts p ON c.post_id = p.id
+      WHERE c.is_active = 1
+      ORDER BY c.created_at DESC
+      `
+    );
+
+    return NextResponse.json({ comments }, { status: 200 });
+  } catch (error) {
+    console.error("Get comments error:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
+}
