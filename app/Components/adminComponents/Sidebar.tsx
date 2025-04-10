@@ -17,7 +17,7 @@ const links = [
   {
     label: "Comments",
     icon: <FaRegComments size={22} />,
-    href: "/admin/comments-table",
+    href: "/admin/comments",
   },
 ];
 
