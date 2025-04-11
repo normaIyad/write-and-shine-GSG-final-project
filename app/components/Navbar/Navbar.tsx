@@ -80,16 +80,7 @@ const NavBar = () => {
               Home
             </Link>
           </Button>
-          {!isLogin && (
-            <Button
-              color="inherit"
-              component={Link}
-              href="/Signin"
-              sx={{ textDecoration: "none", color: "white" }}
-            >
-              Sign In
-            </Button>
-          )}
+    
           <Button color="inherit">
             <Link
               href="/about"
@@ -131,14 +122,46 @@ const NavBar = () => {
           onClose={handleMenuClose}
         >
           <MenuItem onClick={handleMenuClose}>
-            <Link
+           
+          </MenuItem>
+          {isLogin ? (
+            <div>
+             <MenuItem onClick={handleLogout}>Logout</MenuItem>
+             
+          <MenuItem>
+          <Link
               href="/PersonalDetails"
               style={{ textDecoration: "none", color: "inherit" }}
             >
               Profile
             </Link>
           </MenuItem>
-          <MenuItem onClick={handleLogout}>Logout</MenuItem>
+            
+            {
+            data?.role === "admin" && (
+              <MenuItem onClick={handleMenuClose}>
+   <Link
+                href="/admin"
+                style={{ textDecoration: "none", color: "inherit" }}
+              >
+                Admin Panel
+              </Link>
+                </MenuItem>
+           
+            )
+          }
+            </div>
+      
+          )
+          :
+          <MenuItem
+          color="inherit"
+          component={Link}
+          href="/Signin"
+        >
+          Sign In
+        </MenuItem>
+          }
         </Menu>
       </Toolbar>
     </AppBar>
