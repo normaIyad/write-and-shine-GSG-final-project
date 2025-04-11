@@ -151,7 +151,7 @@ const DynamicPage: React.FC<IProps> = ({ params }) => {
                 id={post.id}
                 content={post.content}
                 title={post.title}
-                author_id={post.author_id}
+                author_id={parseInt(params.id)}
                 like_count={post.like_count}
                 author_name={post.author_name || "Unknown"}
                 category_id={post.category_id || 0}

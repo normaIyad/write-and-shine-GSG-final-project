@@ -24,7 +24,16 @@ export async function GET(
     const user = userResult[0];
 
     const [posts]: any = await db.query(
-      `SELECT id, title, content, category_id, created_at FROM posts WHERE author_id = ? ORDER BY created_at DESC`,
+      `SELECT 
+         p.id, 
+         p.title, 
+         p.content, 
+         p.category_id, 
+         p.created_at,
+         (SELECT COUNT(*) FROM likes WHERE post_id = p.id) AS like_count
+       FROM posts p
+       WHERE p.author_id = ?
+       ORDER BY p.created_at DESC`,
       [userId]
     );
 

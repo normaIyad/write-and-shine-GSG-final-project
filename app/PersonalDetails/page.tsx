@@ -52,6 +52,13 @@ const UserProfilePage = () => {
       const data = await response.json();
       if (data && data.posts) {
         setPosts(data.posts);
+     const c =  posts.map((poat)=>{
+        console.log(poat.id)
+        console.log(poat.author_id , poat.author_image , poat.content)
+        console.log(poat.like_count)
+
+       })
+       console.log(c)
       } else {
         console.error("No posts found in response");
       }

@@ -19,7 +19,15 @@ interface PlogProps {
   is_active: boolean;
 }
 
-const Plog = ({ id, content, title, author_id, like_count, author_name, author_image }: PlogProps) => {
+const Plog = ({
+  id,
+  content,
+  title,
+  author_id,
+  like_count,
+  author_name,
+  author_image,
+}: PlogProps) => {
   return (
     <Box
       sx={{
@@ -55,15 +63,19 @@ const Plog = ({ id, content, title, author_id, like_count, author_name, author_i
           />
         </Box>
         <Box>
-          <Typography variant="subtitle1" fontWeight="bold" sx={{ color: "primary.main" }}>
-            <Link href={`/profile/${author_id}`}>
-              {author_name }
-            </Link>
+          <Typography
+            variant="subtitle1"
+            fontWeight="bold"
+            sx={{ color: "primary.main" }}
+          >
+            <Link href={`/profile/${author_id}`}>{author_name}</Link>
           </Typography>
         </Box>
       </Box>
       <Typography variant="h4" sx={{ mb: 2 }}>
-        {title}
+        <Link href={`/plogPage/${id}`} passHref target="_blank">
+           {title}
+        </Link>
       </Typography>
       <ReadMore fullContent={content} />
       <Box>
@@ -72,7 +84,5 @@ const Plog = ({ id, content, title, author_id, like_count, author_name, author_i
     </Box>
   );
 };
-
-
 
 export default Plog;

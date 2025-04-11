@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
@@ -7,17 +7,22 @@ import { Box, Button } from '@mui/material';
 import { box, color, fount, mainbutton } from './style';
 import Comments from '../Comments/Comments';
 import { useUserStore } from '@/app/store/useUserStore';
+
 interface Props {
-  id: number,
-  like_count : number
+  id: number;
+  like_count: number;
 }
-const LikeComment = ({id , like_count } : Props) => {
+
+const LikeComment = ({ id, like_count }: Props) => {
   const postId = id;
-  const { isLogin, userData  } = useUserStore();
-  const [likesCount, setLikesCount] = React.useState(like_count);
+  const { isLogin, userData } = useUserStore();
+  const [hasMounted, setHasMounted] = useState(false);
+  const [likesCount, setLikesCount] = useState(like_count || 0);
+  const [isLiked, setIsLiked] = useState(false);
   const [showComment, setShowComment] = useState(false);
+
   const addLike = async () => {
-    const response = await fetch("api/likes", {
+    const response = await fetch("/api/likes", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -25,12 +30,11 @@ const LikeComment = ({id , like_count } : Props) => {
         user_id: userData?.userId,
       }),
     });
-    if (!response.ok) {
-      throw new Error("Failed to fetch data");
-    }
+    if (!response.ok) throw new Error("Failed to add like");
   };
+
   const removeLike = async () => {
-    const response = await fetch("api/likes", {
+    const response = await fetch("/api/likes", {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -38,21 +42,23 @@ const LikeComment = ({id , like_count } : Props) => {
         user_id: userData?.userId,
       }),
     });
-    if (!response.ok) {
-      throw new Error("Failed to fetch data");
-    }
+    if (!response.ok) throw new Error("Failed to remove like");
   };
-  const likes = async () => {
+
+  const refreshLikes = async () => {
     const response = await fetch(`/api/likes/${postId}`);
-    if (!response.ok) {
-      throw new Error("Failed to fetch data");
-    }
+    if (!response.ok) throw new Error("Failed to fetch likes");
+
     const data = await response.json();
+
+    const hasLiked = data.data.some(
+      (like: any) => like.user_id === userData?.userId
+    );
+
+    setIsLiked(hasLiked);
     setLikesCount(data.data.length);
-  }
+  };
 
-
-  const [isLiked, setIsLiked] = React.useState(false);
   const likeClick = async () => {
     if (!isLogin) {
       alert("Please Login to view likes");
@@ -64,35 +70,37 @@ const LikeComment = ({id , like_count } : Props) => {
       } else {
         await addLike();
       }
-      likes();
-      setIsLiked(!isLiked);
+      await refreshLikes();
     } catch (err) {
       console.error(err);
     }
   };
+
   useEffect(() => {
-    if (like_count === null) {
-      setLikesCount(0); 
-    }
-  }, [like_count]);
+    refreshLikes();
+  }, [postId, userData?.userId]);
+  useEffect(() => {
+    setHasMounted(true); 
+  }, []);
+  if (!hasMounted) return null;
   return (
     <Box>
       <Box sx={box}>
-      <Button onClick={() => { likeClick() }} sx={mainbutton} >
-        {isLiked ? <FavoriteIcon sx={color} /> : <FavoriteBorderIcon sx={fount} />}
-        {likesCount > 0 ? likesCount : null}
-      </Button>
-      <Button sx={mainbutton} onClick={() => setShowComment(true)}>
-        <ChatBubbleOutlineIcon sx={fount} />
-      </Button>
+        <Button onClick={likeClick} sx={mainbutton}>
+          {isLiked ? <FavoriteIcon sx={color} /> : <FavoriteBorderIcon sx={fount} />}
+          {likesCount > 0 ? likesCount : null}
+        </Button>
+        <Button sx={mainbutton} onClick={() => setShowComment(true)}>
+          <ChatBubbleOutlineIcon sx={fount} />
+        </Button>
       </Box>
-      <Box sx={{
-        width : "100"
-      }}>
-      {showComment && <Comments postId={postId} />}
+      <Box sx={{ width: "100%" }}>
+        {showComment && <Comments postId={postId} />}
       </Box>
     </Box>
-  )
-}
+  );
+};
 
-export default LikeComment
+export default LikeComment;
+
+
