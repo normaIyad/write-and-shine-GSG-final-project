@@ -21,17 +21,23 @@
 
 ## 🧪 Getting Started
 
-1. Clone the repo  
+1. **Clone the repo**
+
    ```bash
-https://github.com/normaIyad/write-and-shine-GSG-final-project
-Install dependencies
-bash
-npm install
-Set up environment variables for Cloudinary and MySQL
+   git clone https://github.com/normaIyad/write-and-shine-GSG-final-project.git
+   cd write-and-shine-GSG-final-project
+ 2. Install dependencies
+       npm install
+4. Set up environment variables
+     CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
+DATABASE_URL=your_mysql_connection_string
+5. Run the development server
+   npm run dev
 
-Run the development server
 
-bash
+
 نسخ
 تحرير
 npm run dev
